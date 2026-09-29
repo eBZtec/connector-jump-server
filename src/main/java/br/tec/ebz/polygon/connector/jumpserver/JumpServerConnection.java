@@ -16,19 +16,25 @@
 
 package br.tec.ebz.polygon.connector.jumpserver;
 
+import br.tec.ebz.polygon.connector.jumpserver.api.Connection;
 import org.identityconnectors.common.logging.Log;
 
-public class JumpServerConnection {
+import java.net.MalformedURLException;
+
+public class JumpServerConnection extends Connection {
 
     private static final Log LOG = Log.getLog(JumpServerConnection.class);
 
-    private JumpServerConfiguration configuration;
 
-    public JumpServerConnection(JumpServerConfiguration configuration) {
-        this.configuration = configuration;
+    public JumpServerConnection(JumpServerConfiguration configuration) throws MalformedURLException {
+        super(configuration);
+    }
+
+    public void setupServices() {
+        LOG.ok("Initializing connector services...");
     }
 
     public void dispose() {
-        //todo implement
+        LOG.ok("Connector disposed successfully");
     }
 }

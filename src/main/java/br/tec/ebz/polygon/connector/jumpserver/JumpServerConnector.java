@@ -16,10 +16,16 @@
 
 package br.tec.ebz.polygon.connector.jumpserver;
 
+import org.apache.cxf.interceptor.Fault;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConfigurationException;
+import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
+
+import java.net.MalformedURLException;
 
 @ConnectorClass(displayNameKey = "jumpserver.connector.display", configurationClass = JumpServerConfiguration.class)
 public class JumpServerConnector implements Connector {
@@ -37,7 +43,16 @@ public class JumpServerConnector implements Connector {
     @Override
     public void init(Configuration configuration) {
         this.configuration = (JumpServerConfiguration)configuration;
-        this.connection = new JumpServerConnection(this.configuration);
+        try {
+            this.connection = new JumpServerConnection(this.configuration);
+            this.connection.setupServices();
+        } catch (Fault e) {
+            throw new ConnectionFailedException("URL is not valid");
+        } catch (ConnectionFailedException e) {
+            throw e;
+        }  catch (Exception e) {
+            throw new ConnectorException("Could not connect to services, reason: " + e.getMessage());
+        }
     }
 
     @Override
