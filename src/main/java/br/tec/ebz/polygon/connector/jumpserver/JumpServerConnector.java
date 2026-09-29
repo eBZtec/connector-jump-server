@@ -24,11 +24,12 @@ import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.spi.Configuration;
 import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
+import org.identityconnectors.framework.spi.operations.TestOp;
 
 import java.net.MalformedURLException;
 
 @ConnectorClass(displayNameKey = "jumpserver.connector.display", configurationClass = JumpServerConfiguration.class)
-public class JumpServerConnector implements Connector {
+public class JumpServerConnector implements Connector, TestOp {
 
     private static final Log LOG = Log.getLog(JumpServerConnector.class);
 
@@ -62,5 +63,10 @@ public class JumpServerConnector implements Connector {
             connection.dispose();
             connection = null;
         }
+    }
+
+    @Override
+    public void test() {
+        LOG.ok("Jump Server connector tested successfully!");
     }
 }
