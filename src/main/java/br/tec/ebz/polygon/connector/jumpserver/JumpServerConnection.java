@@ -16,12 +16,12 @@
 
 package br.tec.ebz.polygon.connector.jumpserver;
 
-import br.tec.ebz.polygon.connector.jumpserver.api.Connection;
+import br.tec.ebz.polygon.connector.jumpserver.api.APIConnection;
 import org.identityconnectors.common.logging.Log;
 
 import java.net.MalformedURLException;
 
-public class JumpServerConnection extends Connection {
+public class JumpServerConnection extends APIConnection {
 
     private static final Log LOG = Log.getLog(JumpServerConnection.class);
 

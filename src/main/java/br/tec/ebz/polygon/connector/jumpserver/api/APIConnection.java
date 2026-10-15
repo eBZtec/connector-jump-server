@@ -24,15 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Connection {
-    private static final Log LOG = Log.getLog(Connection.class);
+public class APIConnection {
+    private static final Log LOG = Log.getLog(APIConnection.class);
     private static final String AUTH_URL = "/api/v1/authentication/auth/";
 
     private JumpServerConfiguration configuration;
 
     private String token;
 
-    public Connection(JumpServerConfiguration configuration) throws MalformedURLException {
+    public APIConnection(JumpServerConfiguration configuration) throws MalformedURLException {
         this.configuration = configuration;
         fetchToken();
     }
