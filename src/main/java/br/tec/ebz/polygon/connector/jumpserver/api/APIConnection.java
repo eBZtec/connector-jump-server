@@ -17,7 +17,6 @@ import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -32,7 +31,7 @@ public class APIConnection {
 
     private String token;
 
-    public APIConnection(JumpServerConfiguration configuration) throws MalformedURLException {
+    public APIConnection(JumpServerConfiguration configuration) {
         this.configuration = configuration;
         fetchToken();
     }
@@ -69,7 +68,7 @@ public class APIConnection {
         }
     }
 
-    protected <T> T setupClient(Class<T> type) throws MalformedURLException {
+    protected <T> T setupClient(Class<T> type) {
         JAXRSClientFactoryBean bean = new JAXRSClientFactoryBean();
         bean.setResourceClass(type);
         bean.setAddress(this.configuration.getBaseUrl());
@@ -89,7 +88,7 @@ public class APIConnection {
         return proxy;
     }
 
-    private void fetchToken() throws MalformedURLException {
+    private void fetchToken() {
         LOG.ok("Starting JumpServer API authentication...");
         URI baseUri = URI.create(configuration.getBaseUrl());
         URI resolvedUri = baseUri.resolve(AUTH_URL);
