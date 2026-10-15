@@ -90,6 +90,7 @@ public class Connection {
     }
 
     private void fetchToken() throws MalformedURLException {
+        LOG.ok("Starting JumpServer API authentication...");
         URI baseUri = URI.create(configuration.getBaseUrl());
         URI resolvedUri = baseUri.resolve(AUTH_URL);
 
@@ -112,8 +113,9 @@ public class Connection {
         Map<String, Object> responseBody;
         try (Response response = client.post(authRequest)) {
 
+            LOG.info("Authentication HTTP status \"{0}\", response \"{1}\"", response.getStatus(), response.getStatusInfo().getReasonPhrase());
+
             if (response.getStatus() < 200 || response.getStatus() >= 300) {
-                LOG.error("Could not authenticated, reason: " + response);
                 throw new ConnectionFailedException("Could not not authenticate, reason: " + response);
             }
 
@@ -126,7 +128,7 @@ public class Connection {
             throw new ConnectionFailedException("Could not authenticate, reason: token is null.");
         }
 
-        LOG.ok("Authentication worked successfully.");
+        LOG.ok("Token was retrieved successfully.");
 
     }
 

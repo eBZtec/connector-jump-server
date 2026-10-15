@@ -17,9 +17,10 @@ public class TestOpTest extends BaseTestConnection{
     @Test(expectedExceptions = ConnectionFailedException.class)
     public void naoDeveConectarNaBaseDevidoAoUsernameEstaIncorretoTest() {
         JumpServerConfiguration configuration = new JumpServerConfiguration();
-        configuration.setBaseUrl("http://jumpserver.lab");
-        configuration.setUsername("usuario_errado");
-        configuration.setPassword(new GuardedString("senha_errada.".toCharArray()));
+        configuration.setBaseUrl("https://jumpserver.lab");
+        configuration.setUsername("fake");
+        configuration.setPassword(new GuardedString("senhaerrada.".toCharArray()));
+        configuration.setIsTrustAllCertificates(true);
 
         ConnectorFacade facade = getTestConnection(configuration);
 
@@ -29,9 +30,10 @@ public class TestOpTest extends BaseTestConnection{
     @Test(expectedExceptions = ConnectionFailedException.class)
     public void naoDeveConectarNaBaseDevidoAoHostEstaIncorretoTest() {
         JumpServerConfiguration configuration = new JumpServerConfiguration();
-        configuration.setBaseUrl("http://host.errado");
-        configuration.setUsername("usuario_errado");
+        configuration.setBaseUrl("https://unknown.lab");
+        configuration.setUsername("usuario.errado");
         configuration.setPassword(new GuardedString("senha_errada.".toCharArray()));
+        configuration.setIsTrustAllCertificates(true);
 
         ConnectorFacade facade = getTestConnection(configuration);
 

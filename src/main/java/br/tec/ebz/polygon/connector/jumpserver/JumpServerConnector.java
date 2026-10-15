@@ -16,9 +16,8 @@
 
 package br.tec.ebz.polygon.connector.jumpserver;
 
-import org.apache.cxf.interceptor.Fault;
+import jakarta.ws.rs.ProcessingException;
 import org.identityconnectors.common.logging.Log;
-import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.spi.Configuration;
@@ -26,7 +25,8 @@ import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
 import org.identityconnectors.framework.spi.operations.TestOp;
 
-import java.net.MalformedURLException;
+import java.nio.channels.UnresolvedAddressException;
+
 
 @ConnectorClass(displayNameKey = "jumpserver.connector.display", configurationClass = JumpServerConfiguration.class)
 public class JumpServerConnector implements Connector, TestOp {
@@ -45,9 +45,16 @@ public class JumpServerConnector implements Connector, TestOp {
     public void init(Configuration configuration) {
         this.configuration = (JumpServerConfiguration)configuration;
         try {
+            this.configuration.validate();
             this.connection = new JumpServerConnection(this.configuration);
             this.connection.setupServices();
-        } catch (Fault e) {
+
+        } catch (UnresolvedAddressException e) {
+            LOG.error("Could not connect to the Jump Server, reason: \"{0}\"", e.getMessage());
+            throw new ConnectionFailedException(e.getMessage());
+        }
+        catch (ProcessingException e) {
+            LOG.error("Could not connect to the Jump Server, reason: \"{0}\"", e.getMessage());
             throw new ConnectionFailedException("URL is not valid");
         } catch (ConnectionFailedException e) {
             throw e;
@@ -67,6 +74,5 @@ public class JumpServerConnector implements Connector, TestOp {
 
     @Override
     public void test() {
-        LOG.ok("Jump Server connector tested successfully!");
     }
 }
