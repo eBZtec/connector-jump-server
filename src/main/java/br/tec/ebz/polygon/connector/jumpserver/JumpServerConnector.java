@@ -21,15 +21,15 @@ import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.spi.Configuration;
-import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
+import org.identityconnectors.framework.spi.PoolableConnector;
 import org.identityconnectors.framework.spi.operations.TestOp;
 
 import java.nio.channels.UnresolvedAddressException;
 
 
 @ConnectorClass(displayNameKey = "jumpserver.connector.display", configurationClass = JumpServerConfiguration.class)
-public class JumpServerConnector implements Connector, TestOp {
+public class JumpServerConnector implements PoolableConnector, TestOp {
 
     private static final Log LOG = Log.getLog(JumpServerConnector.class);
 
@@ -80,5 +80,13 @@ public class JumpServerConnector implements Connector, TestOp {
             throw new ConnectionFailedException("Token is not valid");
         }
         LOG.ok("Test connection executed successfully.");
+    }
+
+    @Override
+    public void checkAlive() {
+        if (!connection.isValidToken()) {
+            throw new ConnectorException("Token is not valid.");
+        }
+        connection.init();
     }
 }
