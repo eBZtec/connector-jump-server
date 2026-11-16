@@ -41,7 +41,6 @@ public class APIConnection {
 
     public APIConnection(JumpServerConfiguration configuration) {
         this.configuration = configuration;
-        fetchToken();
     }
 
     private Date parseToDate(String inputDate) {
@@ -108,7 +107,7 @@ public class APIConnection {
         return proxy;
     }
 
-    private void fetchToken() {
+    public void fetchToken() {
         LOG.ok("Starting JumpServer API authentication...");
         URI baseUri = URI.create(configuration.getBaseUrl());
         URI resolvedUri = baseUri.resolve(AUTH_URL);
@@ -153,6 +152,10 @@ public class APIConnection {
 
         LOG.ok("Token was retrieved successfully.");
 
+    }
+
+    public Boolean isValidToken() {
+        return !tokenIsExpired();
     }
 
     private String getAccessToken() {

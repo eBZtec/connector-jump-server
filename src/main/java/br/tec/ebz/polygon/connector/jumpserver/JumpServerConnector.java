@@ -45,9 +45,11 @@ public class JumpServerConnector implements Connector, TestOp {
     public void init(Configuration configuration) {
         this.configuration = (JumpServerConfiguration)configuration;
         try {
-            this.configuration.validate();
-            this.connection = new JumpServerConnection(this.configuration);
-            this.connection.setupServices();
+            configuration.validate();
+
+            connection = new JumpServerConnection(this.configuration);
+            connection.init();
+            connection.setupServices();
 
         } catch (UnresolvedAddressException e) {
             LOG.error("Could not connect to the Jump Server, reason: \"{0}\"", e.getMessage());
@@ -74,5 +76,9 @@ public class JumpServerConnector implements Connector, TestOp {
 
     @Override
     public void test() {
+        if (!connection.isValidToken()) {
+            throw new ConnectionFailedException("Token is not valid");
+        }
+        LOG.ok("Test connection executed successfully.");
     }
 }
