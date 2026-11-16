@@ -44,9 +44,9 @@ public class JumpServerConnector implements PoolableConnector, TestOp {
     @Override
     public void init(Configuration configuration) {
         this.configuration = (JumpServerConfiguration)configuration;
-        try {
-            configuration.validate();
+        configuration.validate();
 
+        try {
             connection = new JumpServerConnection(this.configuration);
             connection.init();
             connection.setupServices();
@@ -84,9 +84,10 @@ public class JumpServerConnector implements PoolableConnector, TestOp {
 
     @Override
     public void checkAlive() {
+        LOG.info("Starting method \"checkAlive\". Verifying if the token still valid....");
         if (!connection.isValidToken()) {
             throw new ConnectorException("Token is not valid.");
         }
-        connection.init();
+        LOG.ok("Finishing method \"checkAlive\". Token is valid.");
     }
 }

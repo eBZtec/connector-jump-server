@@ -151,6 +151,7 @@ public class APIConnection {
         }
 
         LOG.ok("Token was retrieved successfully.");
+        LOG.info("Token is valid until \"{0}\"", dateExpiredStr);
 
     }
 
@@ -160,6 +161,7 @@ public class APIConnection {
 
     private String getAccessToken() {
         if (token == null || tokenIsExpired()) {
+            LOG.warn("Token is invalid. Generating a new token...");
             fetchToken();
         }
         return token;
