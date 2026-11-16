@@ -16,7 +16,7 @@
 
 package br.tec.ebz.polygon.connector.jumpserver;
 
-import br.tec.ebz.polygon.connector.jumpserver.api.APIConnection;
+import br.tec.ebz.polygon.connector.jumpserver.api.connection.APIConnection;
 import org.identityconnectors.common.logging.Log;
 
 import java.net.MalformedURLException;

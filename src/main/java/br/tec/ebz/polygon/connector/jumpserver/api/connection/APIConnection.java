@@ -1,4 +1,4 @@
-package br.tec.ebz.polygon.connector.jumpserver.api;
+package br.tec.ebz.polygon.connector.jumpserver.api.connection;
 
 import br.tec.ebz.polygon.connector.jumpserver.JumpServerConfiguration;
 import com.evolveum.polygon.common.GuardedStringAccessor;

@@ -1,4 +1,4 @@
-package br.tec.ebz.polygon.connector.jumpserver.api;
+package br.tec.ebz.polygon.connector.jumpserver.api.connection;
 
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
