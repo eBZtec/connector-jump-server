@@ -108,18 +108,18 @@ public class JumpServerConfiguration extends AbstractConfiguration {
         String errorMessage = null;
 
         if (baseUrl == null || baseUrl.isBlank()) {
-            errorMessage = "Base URL é um campo obrigatório";
+            errorMessage = "\"Base URL\" is a required field";
         } else {
             try {
                 new URL(baseUrl).toURI();
             } catch (Exception e) {
-                errorMessage = "Informe uma URL válida no campo \"Base URL\"";
+                errorMessage = "\"Base URL\" is not a valid URL";
             }
         }
 
-        if (username == null || username.isBlank()) errorMessage = "Campo username é obrigatório.";
+        if (username == null || username.isBlank()) errorMessage = "\"Username\" is a required field";
 
-        if (password == null) errorMessage = "Campo da senha é obrigatório.";
+        if (password == null) errorMessage = "\"Password\" is a required field";
 
         if (errorMessage != null) throw new ConfigurationException(errorMessage);
     }

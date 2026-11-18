@@ -11,6 +11,7 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.identityconnectors.common.logging.Log;
+import org.identityconnectors.framework.common.exceptions.ConfigurationException;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.jakarta.rs.json.JacksonJsonProvider;
@@ -19,6 +20,10 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.net.URI;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +31,28 @@ import java.util.Map;
 public class APIConnection {
     private static final Log LOG = Log.getLog(APIConnection.class);
     private static final String AUTH_URL = "/api/v1/authentication/auth/";
+    private static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss Z");
 
     private JumpServerConfiguration configuration;
 
     private String token;
+    private Date dateExpired;
 
     public APIConnection(JumpServerConfiguration configuration) {
         this.configuration = configuration;
-        fetchToken();
+    }
+
+    private Date parseToDate(String inputDate) {
+        if (inputDate == null) return null;
+        try {
+            OffsetDateTime odt = OffsetDateTime.parse(inputDate, FORMATTER);
+            Instant instant = odt.toInstant();
+
+            return Date.from(instant);
+        } catch (Exception e) {
+            throw new ConfigurationException("Could not parse token expired date, reason: " + e.getMessage());
+        }
     }
 
     private void configureHttpConduit(HTTPConduit conduit) {
@@ -88,7 +107,7 @@ public class APIConnection {
         return proxy;
     }
 
-    private void fetchToken() {
+    public void fetchToken() {
         LOG.ok("Starting JumpServer API authentication...");
         URI baseUri = URI.create(configuration.getBaseUrl());
         URI resolvedUri = baseUri.resolve(AUTH_URL);
@@ -123,16 +142,39 @@ public class APIConnection {
         }
 
         token = (String) responseBody.get("token");
+
+        String dateExpiredStr = (String) responseBody.get("date_expired");
+        dateExpired = parseToDate(dateExpiredStr);
+
         if (token == null) {
             throw new ConnectionFailedException("Could not authenticate, reason: token is null.");
         }
 
         LOG.ok("Token was retrieved successfully.");
+        LOG.info("Token is valid until \"{0}\"", dateExpiredStr);
 
     }
 
+    public Boolean isValidToken() {
+        return !tokenIsExpired();
+    }
+
     private String getAccessToken() {
+        if (token == null || tokenIsExpired()) {
+            LOG.warn("Token is invalid. Generating a new token...");
+            fetchToken();
+        }
         return token;
+    }
+
+    private Boolean tokenIsExpired() {
+        if (dateExpired == null) return Boolean.TRUE;
+
+        Instant expiryInstant = dateExpired.toInstant();
+        Instant now = Instant.now();
+
+        return now.isAfter(expiryInstant);
+
     }
 
     protected void setConfiguration(JumpServerConfiguration configuration) { this.configuration = configuration; }

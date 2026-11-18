@@ -40,8 +40,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <cxf.version>4.2.4</cxf.version>
-        <jackson.tools>3.2.3</jackson.tools>
-        <jackson.fasterxml.version>2.22.3</jackson.fasterxml.version>
+        <jackson.tools>3.3.0</jackson.tools>
+        <jackson.fasterxml.version>2.23.0</jackson.fasterxml.version>
     </properties>
 
     <repositories>

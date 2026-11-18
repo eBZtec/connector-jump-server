@@ -30,6 +30,10 @@ public class JumpServerConnection extends APIConnection {
         super(configuration);
     }
 
+    public void init() {
+        fetchToken();
+    }
+
     public void setupServices() {
         LOG.ok("Initializing connector services...");
     }

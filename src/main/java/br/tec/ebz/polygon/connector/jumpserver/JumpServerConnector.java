@@ -21,15 +21,15 @@ import org.identityconnectors.common.logging.Log;
 import org.identityconnectors.framework.common.exceptions.ConnectionFailedException;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.spi.Configuration;
-import org.identityconnectors.framework.spi.Connector;
 import org.identityconnectors.framework.spi.ConnectorClass;
+import org.identityconnectors.framework.spi.PoolableConnector;
 import org.identityconnectors.framework.spi.operations.TestOp;
 
 import java.nio.channels.UnresolvedAddressException;
 
 
 @ConnectorClass(displayNameKey = "jumpserver.connector.display", configurationClass = JumpServerConfiguration.class)
-public class JumpServerConnector implements Connector, TestOp {
+public class JumpServerConnector implements PoolableConnector, TestOp {
 
     private static final Log LOG = Log.getLog(JumpServerConnector.class);
 
@@ -44,10 +44,12 @@ public class JumpServerConnector implements Connector, TestOp {
     @Override
     public void init(Configuration configuration) {
         this.configuration = (JumpServerConfiguration)configuration;
+        configuration.validate();
+
         try {
-            this.configuration.validate();
-            this.connection = new JumpServerConnection(this.configuration);
-            this.connection.setupServices();
+            connection = new JumpServerConnection(this.configuration);
+            connection.init();
+            connection.setupServices();
 
         } catch (UnresolvedAddressException e) {
             LOG.error("Could not connect to the Jump Server, reason: \"{0}\"", e.getMessage());
@@ -74,5 +76,18 @@ public class JumpServerConnector implements Connector, TestOp {
 
     @Override
     public void test() {
+        if (!connection.isValidToken()) {
+            throw new ConnectionFailedException("Token is not valid");
+        }
+        LOG.ok("Test connection executed successfully.");
+    }
+
+    @Override
+    public void checkAlive() {
+        LOG.info("Starting method \"checkAlive\". Verifying if the token still valid....");
+        if (!connection.isValidToken()) {
+            throw new ConnectorException("Token is not valid.");
+        }
+        LOG.ok("Finishing method \"checkAlive\". Token is valid.");
     }
 }
